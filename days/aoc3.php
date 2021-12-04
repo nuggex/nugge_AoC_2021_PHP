@@ -9,7 +9,7 @@ $aoc = new AOC\aoc();
 $data = $aoc->readLines(DATA_DIR . '/day3_a.txt');
 
 
-function day3_part1($data)
+function day3_part1($data): array
 {
     $bits = array_fill(0, 12, 0);
     $epsilon = array_fill(0, 12, 1);
@@ -29,66 +29,68 @@ function day3_part1($data)
 
 }
 
-function day3_part2($data,$count)
+function countNumbers($data, $index): array
 {
-    $castle = day3_part1($data);
-    $shield = $castle[1];
-    $oxygen = $data;
-    $co = $data;
-
-    while(sizeof($data)>1){
-        foreach($data as $d){
-            $values = str_split($d);
-            foreach($values as $value){
-                if($)
-            }
+    $countOnes = 0;
+    $countZeros = 0;
+    foreach ($data as $d) {
+        if ($d[$index] === "1") {
+            $countOnes++;
+        }
+        if ($d[$index] === "0") {
+            $countZeros++;
         }
     }
-    foreach ($castle[0] as $keyData => $d) {
-        foreach ($data as $key => $value) {
-            $count = substr_count($value, $count);
-            $r = str_split($value);
-            $v = intval($r[$keyData]);
-
-            if($d != $shield[$keyData]) {
-
-
-                if (sizeof($co) > 1) {
-                    if ($v === $d) {
-                        //echo "hep";
-                        unset($co[$key]);
-                    }
-                }
-                if (sizeof($oxygen) > 1) {
-
-                    if ($v !== $d) {
-                        //echo "hop";
-                        unset($oxygen[$key]);
-                    }
-                }
-            }
-        }
-    }
-
-    echo "co:" . bindec(array_values($co)[0]);
-    echo "oxy: " . bindec(array_values($oxygen)[0]);
-    echo "answer: ". bindec(array_values($co)[0]) * bindec(array_values($oxygen)[0]);
-//var_dump($co);
-// var_dump($oxygen);
-    /*
-    $commonBit = [];
-    foreach($data as $row){
-        $values = array_count_values(str_split($row));
-        arsort($values);
-        $commonBit = array_slice(array_keys($values),0,12,true);
-    }
-    foreach ($data as $row){
-        foreach(str_split($row) as $value){
-
-        }
-    }'*/
+    return [$countOnes, $countZeros];
 }
 
-echo "part1: " . bindec(implode(day3_part1($data)[0])) * bindec(implode(day3_part1($data)[1]));
+function day3_part2($data)
+{
+    $index = 0;
+    $shields = $data;
+    while (sizeof($data) > 1) {
 
-day3_part2($data);
+        $countOnes = countNumbers($data, $index)[0];
+        $countZeros = countNumbers($data, $index)[1];
+        if ($countZeros > $countOnes) {
+            $filter = 1;
+        } else {
+            $filter = 0;
+        }
+        foreach ($data as $k => $d) {
+            $values = str_split($d);
+            if ($values[$index] == $filter) {
+                unset($data[$k]);
+            }
+        }
+        $index++;
+    }
+    $index = 0;
+
+    while (sizeof($shields) > 1) {
+
+        $countOnes = countNumbers($shields, $index)[0];
+        $countZeros = countNumbers($shields, $index)[1];
+        if ($countZeros < $countOnes || $countZeros === $countOnes) {
+            $filter = 1;
+        } else {
+            $filter = 0;
+        }
+        foreach ($shields as $k => $d) {
+            $values = str_split($d);
+            if ($values[$index] == $filter) {
+                unset($shields[$k]);
+            }
+        }
+        $index++;
+    }
+    $d = array_values($data);
+    $s = array_values($shields);
+
+    return bindec($d[0]) * bindec($s[0]);
+
+}
+
+echo "\npart1: " . bindec(implode(day3_part1($data)[0])) * bindec(implode(day3_part1($data)[1]));
+
+echo "\npart2: " . (day3_part2($data)). "\n";
